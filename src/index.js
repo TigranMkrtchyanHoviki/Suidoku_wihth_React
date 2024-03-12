@@ -4,6 +4,26 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 
+// const arr = [
+//   [1, 2, 3],
+//    [5, 3, 8],
+//    [6, 9, 7]
+// ]
+
+// const c = ["dsdsd", true, "5"]
+
+// const a = arr.map((elem, i) => {
+//   if(i === 0) {
+//     return c
+//   }else {
+//     return elem.map((elemenet, ind) => {
+//       return "ccc" + elemenet
+//     })
+//   }
+// })
+
+// console.log("a" , a)
+
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
