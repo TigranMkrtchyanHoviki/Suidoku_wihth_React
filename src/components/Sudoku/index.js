@@ -558,7 +558,6 @@ export const Sudoku = ({choice_Game, links, sudoku, setSudoku, info_about_change
                 for(let j = 0; j < sudoku[i].length; j++) {
                     if(sudoku[i][j].isSame) {
                         console.log(sudoku[i][j])
-                        // setShowResult(true)
                         setResultText("You have the same value!")
                         soundSameValue()
                         isEmpty = true
@@ -571,7 +570,6 @@ export const Sudoku = ({choice_Game, links, sudoku, setSudoku, info_about_change
               row: for( let i = 0; i < sudoku.length; i++) {
                      for(let j = 0; j < sudoku[i].length; j++) {
                         if(sudoku[i][j].value === null) {
-                            // setShowResult(true)
                             setResultText("You have the empty field!")
                             soundEmptyFeild()
                             isWon = false
@@ -581,7 +579,6 @@ export const Sudoku = ({choice_Game, links, sudoku, setSudoku, info_about_change
                 }
 
                 if(isWon) {
-                    // setShowResult(true)
                     setResultText("You won!")
                     soundVictory()
                 }
