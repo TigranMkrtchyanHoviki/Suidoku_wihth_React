@@ -1,16 +1,9 @@
-import AppStyles from './App.css';
+import React from 'react';
 import { GameRouter } from './router/GameRouter';
-import { About_Game } from './components/About_Game';
 
 function App() {
 
-  return (
-    <>
-          <GameRouter />
-
-          {/* <About_Game /> */}
-    </>
-  )
+  return <GameRouter />
 
 }
 
