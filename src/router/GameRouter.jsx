@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
 import { Sudoku } from "../components/Sudoku";
-
-import GameStyles from "./style.module.css"
 import { Header } from "../components/header";
 import { Level_1 } from "../components/Levels/level_1";
 import { Level_2 } from "../components/Levels/level_2";
 import { Level_3 } from "../components/Levels/level_3";
+import { About_Game } from "../components/About_Game";
+
+import { Cover_Game } from "./router.style";
 
 export const GameRouter = () => {
 
@@ -14,6 +15,7 @@ export const GameRouter = () => {
     const [showGamesList_level_2, setShowGamesList_Level_2] = useState(false)
     const [showGamesList_level_3, setShowGamesList_Level_3] = useState(false)
     const [choice_Game, setChoice_game] = useState(null)
+    const [info_about_change_link, setInfo_about_change_link] = useState(false)
 
     const links = [
         ["level1_game1", "level1_game2", "level1_game3", "level1_game4"],
@@ -61,9 +63,8 @@ export const GameRouter = () => {
     }
 
     const handlerHideGamesList = (link) => {
-        console.log(link)
-        setShowGamesList_Level_1(() => false)
-
+        setInfo_about_change_link(!info_about_change_link)
+        setShowGamesList_Level_1(prev => false)
         setChoice_game(link)
     }
 
@@ -78,8 +79,9 @@ export const GameRouter = () => {
                 handlerHideGamesList={handlerHideGamesList}
             />
 
-            <div className={`${GameStyles.cover_game}`}>
+            <Cover_Game>
                 <Routes>
+                    {/* <Route path="/main" element={<div></div>} /> */}
                     <Route path={
                         `/${choice_Game === links[0][0] && links[0][0] ||
                         choice_Game === links[0][1] && links[0][1] ||
@@ -88,7 +90,7 @@ export const GameRouter = () => {
                         }`
                     }
 
-                        element={<Level_1 choice_Game={choice_Game} links={links} />} />
+                        element={<Level_1 choice_Game={choice_Game} links={links} info_about_change_link={info_about_change_link} />} />
 
                     <Route path={
                         `/${choice_Game === links[1][0] && links[1][0] ||
@@ -98,7 +100,7 @@ export const GameRouter = () => {
                         }`
                     }
 
-                        element={<Level_2 choice_Game={choice_Game} links={links} />} />
+                        element={<Level_2 choice_Game={choice_Game} links={links} info_about_change_link={info_about_change_link} />} />
 
                     <Route path={
                     `/${choice_Game === links[2][0] && links[2][0] ||
@@ -108,9 +110,11 @@ export const GameRouter = () => {
                         }`
                     }
 
-                        element={<Level_3 choice_Game={choice_Game} links={links} />} />
+                        element={<Level_3 choice_Game={choice_Game} links={links} info_about_change_link={info_about_change_link} />} />
+
+                        <Route path="/about" element={<About_Game />}/>
                 </Routes>
-            </div>
+            </Cover_Game>
         </BrowserRouter>
     )
 }

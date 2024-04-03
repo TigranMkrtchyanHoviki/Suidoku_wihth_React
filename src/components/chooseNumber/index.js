@@ -1,5 +1,7 @@
 import React from "react";
-import chooseNumbersStyles from "./chooseNumber.module.css"
+
+import { Number_Container } from "./chooseNumber.style";
+import { Number } from "./chooseNumber.style";
 
 export const ChooseNumber = ({handlerAddNumber}) => {
 
@@ -11,16 +13,16 @@ export const ChooseNumber = ({handlerAddNumber}) => {
         const numbers = []
 
         for (let i = 1; i <= 9; i++) {
-            numbers.push(<div 
+            numbers.push(<Number 
                             key={i}
                             onClick={() => handlerForAddingNumber(i)}
-                            className={`${chooseNumbersStyles.number}`}>{i}</div>)
+                            >{i}</Number>)
         }
 
         return numbers
     }
 
-    return <div className={`${chooseNumbersStyles.container}`}>
+    return <Number_Container>
         {createNumber()}
-    </div>
+    </Number_Container>
 }

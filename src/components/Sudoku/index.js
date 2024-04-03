@@ -1,10 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useRef } from "react";
 import { useState } from "react";
 import SudocuStyles from "./sudoku.module.css"
-
+import { AiFillCloseCircle } from "react-icons/ai";
+import { Container_Reset_Btn } from "./sudoku.style"
 import { ChooseNumber } from "../chooseNumber";
+import src_sound_victory  from "./../../audio/victory_sound.mp3"
+import src_sound_empty_field from "./../../audio/sound_resultText.mp3"
+import src_sound_same_value from "./../../audio/sound_same_value.mp3"
 
-export const Sudoku = ({choice_Game, links, sudoku, setSudoku}) => {
+import { Main_Container,
+         Container,
+         Container_Result_Btn,
+         Result_Text,
+         Boxes_Container,
+          } from "./sudoku.style";
+
+export const Sudoku = ({choice_Game, links, sudoku, setSudoku, info_about_change_link}) => {
 
     const [showNumbers, setShowNumbers] = useState(false)
     const [saveID, setSaveID] = useState(null)
@@ -12,26 +23,30 @@ export const Sudoku = ({choice_Game, links, sudoku, setSudoku}) => {
     const [indexColumn, setIndexColumn] = useState(null)
     const [showResult, setShowResult] = useState(false)
     const [resultText, setResultText] = useState("")
-    // const [sudoku, setSudoku] = useState(
-    //     [
-    //         [{ id: 0, index: 0 }, { id: 1, index: 1 }, { id: 2, index: 2 }, { id: 3, index: 3, value: 8, isInitialValue: true }, { id: 4, index: 4 }, { id: 5, index: 5 }, { id: 6, index: 6 }, { id: 7, index: 7 }, { id: 8, index: 8, value: 9, isInitialValue: true }],
-    //         [{ id: 9, index: 0 }, { id: 10, index: 1, value: 1, isInitialValue: true }, { id: 11, index: 2, value: 9, isInitialValue: true }, { id: 12, index: 3 }, { id: 13, index: 4 }, { id: 14, index: 5, value: 5, isInitialValue: true }, { id: 15, index: 6, value: 8, isInitialValue: true }, { id: 16, index: 7, value: 3, isInitialValue: true }, { id: 17, index: 8 }],
-    //         [{ id: 18, index: 0 }, { id: 19, index: 1, value: 4, isInitialValue: true }, { id: 20, index: 2, value: 3, isInitialValue: true }, { id: 21, index: 3 }, { id: 22, index: 4, value: 1, isInitialValue: true }, { id: 23, index: 5 }, { id: 24, index: 6 }, { id: 25, index: 7 }, { id: 26, index: 8, value: 7, isInitialValue: true }],
-    //         [{ id: 27, index: 0, value: 4, isInitialValue: true }, { id: 28, index: 1 }, { id: 29, index: 2 }, { id: 30, index: 3, value: 1, isInitialValue: true }, { id: 31, index: 4, value: 5, isInitialValue: true }, { id: 32, index: 5 }, { id: 33, index: 6 }, { id: 34, index: 7 }, { id: 35, index: 8, value: 3, isInitialValue: true }],
-    //         [{ id: 36, index: 0 }, { id: 37, index: 1 }, { id: 38, index: 2, value: 2, isInitialValue: true }, { id: 39, index: 3, value: 7, isInitialValue: true }, { id: 40, index: 4 }, { id: 41, index: 5, value: 4, isInitialValue: true }, { id: 42, index: 6 }, { id: 43, index: 7, value: 1, isInitialValue: true }, { id: 44, index: 8 }],
-    //         [{ id: 45, index: 0 }, { id: 46, index: 1, value: 8, isInitialValue: true }, { id: 47, index: 2 }, { id: 48, index: 3 }, { id: 49, index: 4, value: 9, isInitialValue: true }, { id: 50, index: 5 }, { id: 51, index: 6, value: 6, isInitialValue: true }, { id: 52, index: 7 }, { id: 53, index: 8 }],
-    //         [{ id: 54, index: 0 }, { id: 55, index: 1, value: 7, isInitialValue: true }, { id: 56, index: 2 }, { id: 57, index: 3 }, { id: 58, index: 4 }, { id: 59, index: 5, value: 6, isInitialValue: true }, { id: 60, index: 6, value: 3, isInitialValue: true }, { id: 61, index: 7 }, { id: 62, index: 8 }],
-    //         [{ id: 63, index: 0 }, { id: 64, index: 1, value: 3, isInitialValue: true }, { id: 65, index: 2 }, { id: 66, index: 3 }, { id: 67, index: 4, value: 7, isInitialValue: true }, { id: 68, index: 5 }, { id: 69, index: 6 }, { id: 70, index: 7, value: 8, isInitialValue: true }, { id: 71, index: 8 }],
-    //         [{ id: 72, index: 0, value: 9, isInitialValue: true }, { id: 73, index: 1 }, { id: 74, index: 2, value: 4, isInitialValue: true }, { id: 75, index: 3, value: 5, isInitialValue: true }, { id: 76, index: 4 }, { id: 77, index: 5 }, { id: 78, index: 6 }, { id: 79, index: 7 }, { id: 80, index: 8, value: 1, isInitialValue: true }]
-    //     ]
-    // )
 
+    const timeOut_id_Ref = useRef()
+
+    const initialSudoku = useMemo(() => {
+          return sudoku
+    }, [])
+
+    const soundVictory = () => {
+        new Audio(src_sound_victory).play()
+    }
+
+    const soundEmptyFeild = () => {
+        new Audio(src_sound_empty_field).play()
+    } 
+
+    const soundSameValue = () => {
+        new Audio(src_sound_same_value).play()
+    }   
     useEffect(() => {
         let id = 0
         setSudoku(sudoku.map((elem, i) => {
             return elem.map((element, ind) => {
                 if(i === 0 && ind === 0) {
-                    if (!element.value) {
+                    if (element.value === undefined) {
                         return {
                             ...element,
                             value: null,
@@ -51,7 +66,8 @@ export const Sudoku = ({choice_Game, links, sudoku, setSudoku}) => {
                     }
                 }else {
                     id += 1
-                    if (!element.value) {
+                    console.log(element.value)
+                    if (element.value === undefined) {
                         return {
                             ...element,
                             value: null,
@@ -74,7 +90,22 @@ export const Sudoku = ({choice_Game, links, sudoku, setSudoku}) => {
         }))
 
         setSaveID(null)
-    }, [choice_Game])
+    }, [])
+
+    useEffect(() => {
+        console.log(sudoku)
+ }, [sudoku])
+
+    useEffect(() => {
+        setSudoku(initialSudoku)
+        setSaveID(null)
+        setResultText("You have the empty field!")
+    }, [choice_Game, info_about_change_link])
+
+    useEffect(() => {
+        if(!showResult)
+          clearTimeout(timeOut_id_Ref.current)
+    }, [showResult])
 
 
     const handlerChooseBox = (id, i, j) => {
@@ -517,32 +548,32 @@ export const Sudoku = ({choice_Game, links, sudoku, setSudoku}) => {
 
     const handlerShowResult = () => {
 
+        setShowResult(true)
+
         let isWon = true
 
-        let isEmpty = true
-
-        if (showResult) {
-            setShowResult(false)
-        } else {
+        let isEmpty = false
 
         row: for( let i = 0; i < sudoku.length; i++) {
                 for(let j = 0; j < sudoku[i].length; j++) {
-                    if(sudoku[i][j].value === null) {
+                    if(sudoku[i][j].isSame) {
                         console.log(sudoku[i][j])
-                        setShowResult(true)
-                        setResultText("You have the empty field")
-                        isEmpty = false
+                        // setShowResult(true)
+                        setResultText("You have the same value!")
+                        soundSameValue()
+                        isEmpty = true
                         break row
                     }
                 }
             }
 
-            if(isEmpty) {
+            if(!isEmpty) {
               row: for( let i = 0; i < sudoku.length; i++) {
                      for(let j = 0; j < sudoku[i].length; j++) {
-                        if(sudoku[i][j].isSame) {
-                            setShowResult(true)
-                            setResultText("You have the same value")
+                        if(sudoku[i][j].value === null) {
+                            // setShowResult(true)
+                            setResultText("You have the empty field!")
+                            soundEmptyFeild()
                             isWon = false
                             break row
                         }
@@ -550,37 +581,78 @@ export const Sudoku = ({choice_Game, links, sudoku, setSudoku}) => {
                 }
 
                 if(isWon) {
-                    setShowResult(true)
-                    setResultText("You won")
+                    // setShowResult(true)
+                    setResultText("You won!")
+                    soundVictory()
                 }
             }
-        }
-
+        
+            timeOut_id_Ref.current = setTimeout(() => {
+                 setShowResult(false)
+            }, 3000)
         
     }
 
-    console.log("choice_Game" ,choice_Game)
+    const handlerReset = () => {
+        setSudoku(sudoku.map((elem, i) => {
+            return elem.map((element, j) => {
+                if(!element.isInitialValue) {
+                    return {
+                        ...element,
+                        value: null,
+                        isSame: false,
+                        backgroundGreen: false
+                    }
+                }else {
+                    return {
+                        ...element,
+                        isSame: false,
+                        backgroundGreen: false
+                    }
+                }
+            })
+        }))
 
-    return (<div>
+        setSaveID(null)
+    }
 
-        <div className={`${SudocuStyles.container}`}>
+    useEffect(() => {
+           if(resultText === "You won!") {
+            setSudoku(sudoku.map((elem, i) => {
+                return elem.map((element, j) => {
+                    return {
+                        ...element,
+                        backgroundGreen: true
+                    }
+                })
+            }))
 
-            <div className={`${SudocuStyles.container_result_btn}`}>
-                <button
-                    onClick={() => handlerShowResult()}
-                >RESULT</button>
-            </div>
+           }
+    }, [resultText])
+    
+    return (<Main_Container>
+
+        <Container>
+
+            <Container_Result_Btn>
+                <button onClick={handlerShowResult}> RESULT </button>
+            </Container_Result_Btn>
+
+            <Container_Reset_Btn>
+                <button onClick={handlerReset}> RESET </button>
+            </Container_Reset_Btn>
 
             {
-                showResult ?
-                    <div className={`${SudocuStyles.result_text}`}>
-                        <p>{resultText}</p>
-                    </div>
-                    :
-                    ""
+                showResult && <Result_Text resultText={resultText}> 
+                                    <p>
+                                        <AiFillCloseCircle className={`${SudocuStyles.icon}`} />
+                                        {resultText}
+                                    </p> 
+                              </Result_Text>
+                
             }
 
-            <div className={`${SudocuStyles.boxes_container} ${choice_Game === links[0][0] && "" || 
+            <Boxes_Container className={`${SudocuStyles.aaa} ${choice_Game === links[0][0] && "" || 
                                                                choice_Game === links[0][1] && SudocuStyles.rotate_90deg || 
                                                                choice_Game === links[0][2] && SudocuStyles.rotate_180deg ||
                                                                choice_Game === links[0][3] && SudocuStyles.rotate_270deg }
@@ -608,7 +680,11 @@ export const Sudoku = ({choice_Game, links, sudoku, setSudoku}) => {
                                                     ${element.id === saveID && SudocuStyles.choose_box} 
                                                     ${element.isSame && SudocuStyles.the_same_value}
                                                     ${element.isInitialValue && SudocuStyles.initial_value}
+                                                    ${element.backgroundGreen && SudocuStyles.choose_box}
                                                     `}
+                                        style={{borderBottom: i === 2 ? "3px solid #000" : i === 5 ? "3px solid #000" : null,
+                                                borderRight: j === 2 ? "3px solid #000" : j === 5 ? "3px solid #000" : null,
+                                                }}
 
                                     >
                                         <span className={`${choice_Game === links[0][0] && "" || 
@@ -640,12 +716,12 @@ export const Sudoku = ({choice_Game, links, sudoku, setSudoku}) => {
                         })
                     })
                 }
-            </div>
+            </Boxes_Container>
             {
                 showNumbers && <ChooseNumber handlerAddNumber={handlerAddNumber} />
             }
 
-        </div>
+        </Container>
 
-    </div>)
+    </Main_Container>)
 }
